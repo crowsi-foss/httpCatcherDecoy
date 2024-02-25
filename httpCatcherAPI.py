@@ -1,3 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+
+
 # this is a low interaction http honeypot decoy written in python
 # it sets up an http server which listens to all incoming requests and logs them to stdout.
 # this server is intended to be sitting behind a traefik proxy as part of the crowsi honeypot platform
