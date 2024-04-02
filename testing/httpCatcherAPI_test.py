@@ -8,19 +8,6 @@ class TestHttpCatcherAPI(unittest.TestCase):
 
     X_FORWARDED_TLS_CLIENT_CERT_INFO = "Subject%3D%22O%3Dtestorg%22%3BSerialNumber%3D%22393838018661973899367923704705986215770034215499%22"
 
-    @classmethod
-    def setUpClass(cls):
-        # Starten Sie den Docker-Container
-        subprocess.Popen(["docker", "run", "-d", "--name", "httpCatcherAPI", "-p", "8000:8000", "crowsi/httpcatcherdecoy:0.1"])
-        # Warten Sie, bis der Container gestartet ist
-        time.sleep(10)
-
-    @classmethod
-    def tearDownClass(cls):
-        # Stoppen und entfernen Sie den Docker-Container
-        subprocess.run(["docker", "stop", "httpCatcherAPI"])
-        subprocess.run(["docker", "rm", "httpCatcherAPI"])
-
     def test_default_route(self):
         # Führen Sie eine Anfrage an den Container aus
         headers = {'X-Forwarded-Tls-Client-Cert-Info': self.X_FORWARDED_TLS_CLIENT_CERT_INFO}
