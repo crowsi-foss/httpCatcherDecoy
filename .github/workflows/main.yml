@@ -1,0 +1,30 @@
+name: repo test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build image
+      run: docker build . --file Dockerfile --tag testimage:latest
+    - name: Start container
+      run: docker run -d --name testcontainer -p 8000:8000 testimage:latest
+    - name: Wait for container to start
+      run: sleep 10
+    - name: perform tests
+      run: |
+        python ./testing/httpCatcherAPI_test.py > test_results.txt
+        if grep -q 'FAILED' test_results.txt; then exit 1; fi
+      
