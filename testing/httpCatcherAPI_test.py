@@ -3,6 +3,7 @@ import subprocess
 import time
 import re
 import requests
+import docker
 
 class TestHttpCatcherAPI(unittest.TestCase):
 
@@ -21,8 +22,10 @@ class TestHttpCatcherAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_logging_contains_expected_info(self):
-        # Lesen Sie die Protokolldatei des Containers
-        logs = subprocess.check_output(["docker", "logs", "httpCatcherAPI"]).decode('utf-8')
+        client = docker.from_env()
+        # get Logs of container
+        container = client.containers.get('testcontainer')
+        logs = container.logs().decode('utf-8')
 
         self.assertTrue(re.search(r'"serial_number":"393838018661973899367923704705986215770034215499"', logs))
         self.assertTrue(re.search(r'"organization":"testorg"', logs))
