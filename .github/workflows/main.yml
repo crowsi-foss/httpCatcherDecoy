@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+    - name: Install python docker 
+      run: pip install docker
     - name: Build image
       run: docker build . --file Dockerfile --tag testimage:latest
     - name: Start container
