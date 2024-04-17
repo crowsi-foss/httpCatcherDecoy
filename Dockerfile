@@ -7,7 +7,7 @@
 #This is the docker file to build a docker container hosting the httpCatcherAPI decoy
 
 # base image
-FROM python:3.13.0a5-alpine3.19
+FROM python:3.13.0a6-alpine3.19
 
 #add ecs-logging capabilities
 RUN pip install ecs-logging
