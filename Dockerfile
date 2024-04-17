@@ -9,18 +9,19 @@
 # base image
 FROM python:3.13.0a6-alpine3.19
 
-#add ecs-logging capabilities
-RUN pip install ecs-logging
-
-#add flask
-RUN pip install flask
-
-#add gunicorn
-RUN pip install gunicorn
-
 
 # create working directory in container
 WORKDIR /home/httpCatcherAPI
+
+#copy the python requirements.txt file into the container
+COPY requirements.txt .
+
+#install the needed python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+#delete requirements file from container
+RUN rm requirements.txt
+
 
 # copy the httpCatcherAPI source code into the work directory
 COPY httpCatcherAPI.py .
