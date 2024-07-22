@@ -7,7 +7,7 @@
 #This is the docker file to build a docker container hosting the httpCatcherAPI decoy
 
 # base image
-FROM python:3.13.0b2-alpine3.19
+FROM python:3.13.0b4-alpine3.19
 
 
 # create working directory in container
