@@ -10,7 +10,7 @@
 FROM python:3.13.0b2-alpine3.19
 
 # Create a non-root user and group
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN addgroup -S appuser && adduser -S -G appuser appuser
 
 # create working directory in container
 WORKDIR /home/httpCatcherAPI
