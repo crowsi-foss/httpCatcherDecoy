@@ -9,6 +9,8 @@
 # base image
 FROM python:3.13.0a6-alpine3.19
 
+# Create a non-root user and group
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # create working directory in container
 WORKDIR /home/httpCatcherAPI
@@ -26,10 +28,16 @@ RUN rm requirements.txt
 # copy the httpCatcherAPI source code into the work directory
 COPY httpCatcherAPI.py .
 
+# Adjust file permissions so that the user has access
+RUN chown -R appuser:appuser /home/httpCatcherAPI
+
+# Set the user to the non-root user
+USER appuser
+
 # start a gunicorn web server in the container that listens on port 8000 and hosts the httpCatcherAPI
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "httpCatcherAPI:app"]
 
 # expose port 8000
 EXPOSE 8000
 
-
+# no healthcheck routine added as container is intended to be used in kubernetes evironment
