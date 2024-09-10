@@ -7,7 +7,7 @@
 #This is the docker file to build a docker container hosting the httpCatcherAPI decoy
 
 # base image
-FROM python:3.13.0rc1-alpine3.19
+FROM python:3.13.0rc2-alpine3.19
 
 # Create a non-root user and group
 RUN addgroup -S appuser && adduser -S -G appuser appuser
