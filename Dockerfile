@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.14.0a1-alpine3.19
+FROM python:3.14.0a2-alpine3.19
 
 # Create a non-root user and group with a numeric UID and GID
 RUN addgroup -g 1001 -S appuser && adduser -u 1001 -G appuser -S appuser
