@@ -1,43 +1,34 @@
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at https://mozilla.org/MPL/2.0/.
-
-
-
-#This is the docker file to build a docker container hosting the httpCatcherAPI decoy
-
-# base image
+# Base image
 FROM python:3.14.0a1-alpine3.19
 
-# Create a non-root user and group
-RUN addgroup -S appuser && adduser -S -G appuser appuser
+# Create a non-root user and group with a numeric UID and GID
+RUN addgroup -g 1001 -S appuser && adduser -u 1001 -G appuser -S appuser
 
-# create working directory in container
+# Set working directory
 WORKDIR /home/httpCatcherAPI
 
-#copy the python requirements.txt file into the container
+# Copy the Python requirements file
 COPY requirements.txt .
 
-#install the needed python dependencies
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-#delete requirements file from container
+# Remove the requirements file
 RUN rm requirements.txt
 
-
-# copy the httpCatcherAPI source code into the work directory
+# Copy the application source code
 COPY httpCatcherAPI.py .
 
-# Adjust file permissions so that the user has access
-RUN chown -R appuser:appuser /home/httpCatcherAPI
+# Adjust file permissions for the non-root user
+RUN chown -R 1001:1001 /home/httpCatcherAPI
 
-# Set the user to the non-root user
-USER appuser
+# Switch to the non-root user
+USER 1001
 
-# start a gunicorn web server in the container that listens on port 8000 and hosts the httpCatcherAPI
+# Start the Gunicorn server
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "httpCatcherAPI:app"]
 
-# expose port 8000
+# Expose port 8000
 EXPOSE 8000
 
-# no healthcheck routine added as container is intended to be used in kubernetes evironment
+# No health check routine added as container is intended to be used in Kubernetes environment
