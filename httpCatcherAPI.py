@@ -61,7 +61,7 @@ def log_request_info():
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def default(path):
-    return ' ', 400
+    return 'Bad Request', 400
 
 
 #start server and listen on port 8000
