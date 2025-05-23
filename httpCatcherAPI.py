@@ -19,6 +19,22 @@ import urllib.parse
 
 app = Flask(__name__)
 
+# Read environment variables for response code and message at startup
+RESPONSE_MESSAGE_VAR = os.environ.get('RESPONSE_MESSAGE', 'success')
+RESPONSE_CODE_STR = os.environ.get('RESPONSE_CODE', '200')
+
+try:
+    RESPONSE_CODE_INT = int(RESPONSE_CODE_STR)
+    if not 100 <= RESPONSE_CODE_INT <= 599:
+        # Using app.logger.warning. Note: ECS formatting might not apply if handlers are set later.
+        app.logger.warning(f"Invalid RESPONSE_CODE: '{RESPONSE_CODE_INT}'. Must be between 100 and 599. Defaulting to 200.")
+        RESPONSE_CODE_VAR = 200
+    else:
+        RESPONSE_CODE_VAR = RESPONSE_CODE_INT
+except ValueError:
+    app.logger.warning(f"Invalid RESPONSE_CODE: '{RESPONSE_CODE_STR}'. Must be an integer. Defaulting to 200.")
+    RESPONSE_CODE_VAR = 200
+
 # set general log level
 app.logger.setLevel(logging.INFO)
 
@@ -61,7 +77,7 @@ def log_request_info():
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def default(path):
-    return 'Bad Request', 400
+    return RESPONSE_MESSAGE_VAR, RESPONSE_CODE_VAR
 
 
 #start server and listen on port 8000
