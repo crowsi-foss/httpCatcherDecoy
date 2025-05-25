@@ -19,14 +19,43 @@ import urllib.parse
 
 app = Flask(__name__)
 
-# set general log level
+# Initialize defaults
+CONFIG_RESPONSE_CODE = 200
+CONFIG_RESPONSE_MESSAGE = "success" # Default message
+
+# set general log level (needs to be set before any app.logger calls)
 app.logger.setLevel(logging.INFO)
 
-#configure log handler
+#configure log handler (needs to be set before any app.logger calls)
 #this codes uses the elastic common schema for simpler log formating
 stdout_handler = logging.StreamHandler(sys.stdout)
 stdout_handler.setFormatter(ecs_logging.StdlibFormatter())
 app.logger.handlers=[stdout_handler]
+
+
+original_http_response_code_env = os.getenv('HTTP_RESPONSE_CODE')
+original_http_response_message_env = os.getenv('HTTP_RESPONSE_MESSAGE')
+
+if original_http_response_code_env is not None:
+    try:
+        parsed_code = int(original_http_response_code_env)
+        if 100 <= parsed_code <= 599:
+            CONFIG_RESPONSE_CODE = parsed_code
+            # If code is valid and from env, try to use message from env, else default "success"
+            if original_http_response_message_env is not None:
+                CONFIG_RESPONSE_MESSAGE = original_http_response_message_env
+            # else CONFIG_RESPONSE_MESSAGE remains "success" (already set as default)
+        else:
+            app.logger.warning(f"Invalid HTTP_RESPONSE_CODE provided: '{original_http_response_code_env}'. Must be an integer between 100 and 599. Using default 200 and message 'success'.")
+            # CONFIG_RESPONSE_CODE remains 200, CONFIG_RESPONSE_MESSAGE remains "success" (already set as defaults)
+    except ValueError:
+        app.logger.warning(f"Invalid HTTP_RESPONSE_CODE provided: '{original_http_response_code_env}'. Must be an integer. Using default 200 and message 'success'.")
+        # CONFIG_RESPONSE_CODE remains 200, CONFIG_RESPONSE_MESSAGE remains "success" (already set as defaults)
+else:
+    # HTTP_RESPONSE_CODE env var was not set, so defaults (200, "success") are used for code and message.
+    # However, if HTTP_RESPONSE_MESSAGE *is* set, it should be used with the default code 200.
+    if original_http_response_message_env is not None:
+        CONFIG_RESPONSE_MESSAGE = original_http_response_message_env
 
 # create global variables needed to parse expected client certificate data added by the traefik proxy
 clientOrg="None"
@@ -61,7 +90,7 @@ def log_request_info():
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def default(path):
-    return 'Bad Request', 400
+    return CONFIG_RESPONSE_MESSAGE, CONFIG_RESPONSE_CODE
 
 
 #start server and listen on port 8000
