@@ -57,6 +57,11 @@ else:
     if original_http_response_message_env is not None:
         CONFIG_RESPONSE_MESSAGE = original_http_response_message_env
 
+# Log the final used CONFIG_RESPONSE_CODE and CONFIG_RESPONSE_MESSAGE
+app.logger.info(
+    f"Final HTTP response configuration: code={CONFIG_RESPONSE_CODE}, message='{CONFIG_RESPONSE_MESSAGE}'"
+)
+
 # create global variables needed to parse expected client certificate data added by the traefik proxy
 clientOrg="None"
 clientSerialNr="None"
